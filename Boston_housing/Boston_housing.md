@@ -1,5 +1,5 @@
 # 보스턴 주택가격 예측
-### Boston_Housing 포트폴리오
+### Boston_housing 포트폴리오
  
 ## 목차
 1. 프로젝트 개요

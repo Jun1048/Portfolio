@@ -71,9 +71,9 @@ itwill 부트캠프 'LAB 05 지도학습' 실습 데이터 기반 개인 포트�
 ![SQL](https://img.shields.io/badge/SQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
 ![scikit--learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=flat-square)
-![CatBoost](https://img.shields.io/badge/CatBoost-FFCC00?style=for-the-badge&logo=CatBoost&logoColor=black)
-![SHAP](https://img.shields.io/badge/SHAP-1E90FF?style=for-the-badge)
- 
+![CatBoost](https://img.shields.io/badge/CatBoost-FFCC00?style=flat-square)
+![SHAP](https://img.shields.io/badge/SHAP-1E90FF?style=flat-square)
+
 ---
  
 ## 📬 Contact

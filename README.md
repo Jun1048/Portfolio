@@ -8,13 +8,13 @@
  
 | # | 프로젝트명 | 한 줄 설명 | 사용 기술 | 링크 |
 |---|---|---|---|---|
-| 1 | **Boston Housing 주택가격 예측** | 1970년대 보스턴 506개 지역 데이터로 주택가격 결정요인을 규명하고 예측모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `CatBoost`, `SHAP` | [🔗 바로가기](#2-boston-housing-주택가격-예측) |
+| 1 | **boston_housing 주택가격 예측** | 1970년대 보스턴 506개 지역 데이터로 주택가격 결정요인을 규명하고 예측모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `CatBoost`, `SHAP` | [🔗 바로가기](#2-boston-housing-주택가격-예측) |
 | 2 | *(추가 예정)* | | | |
 | 3 | *(추가 예정)* | | | |
  
 ---
  
-## 1. Boston Housing 주택가격 예측
+## 1. boston_housing 주택가격 예측
 
 - Background
 

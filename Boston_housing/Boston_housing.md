@@ -1,5 +1,5 @@
-# LAB 05 지도학습 — 보스턴 주택가격 예측
-### Boston Housing 포트폴리오 (California LAB03 방법론 적용)
+# 보스턴 주택가격 예측
+### Boston Housing 포트폴리오
  
 ## 목차
 1. 프로젝트 개요

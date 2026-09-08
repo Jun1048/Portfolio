@@ -1,4 +1,4 @@
-# boston_housing 주택가격 예측
+# Boston Housing 주택가격 예측
 
 ## 목차
 1. 프로젝트 개요
@@ -24,7 +24,7 @@
 | ➡ 경제 주체(개인·법인)의 보유 자산 유형 중 주식·채권과 대체성을 가지는 투자자산 | ➡ 개인의 삶의 질 결정, 소유 재화 중 가장 고가의 자산 |
 | ➡ 포트폴리오 구성에서 핵심 위치 | ➡ 경제적·사회적으로도 다양한 가치 지님, 소비재인 동시에 투자재 |
 
-- boston_housing 데이터는 "자산가치 예측"이 아니라 **"환경정책 편익 추정"에서 출발**한 자료임 (Harrison & Rubinfeld, 1978)
+- Boston Housing 데이터는 "자산가치 예측"이 아니라 **"환경정책 편익 추정"에서 출발**한 자료임 (Harrison & Rubinfeld, 1978)
 - 즉 이 데이터를 다루기 전에, "왜 주택가격 자료로 대기오염을 연구했는가"부터 규명할 필요가 있음
 
 ---
@@ -610,7 +610,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 **분석 대상 데이터**
 
-- 데이터셋: boston_housing — 3단계 파생변수 채택 후 로그변환·플래그 생성 완료
+- 데이터셋: Boston Housing — 3단계 파생변수 채택 후 로그변환·플래그 생성 완료
 - 규모: 506행 × 독립변수 후보 14개 + 종속변수(MEDV_log)
 - 학습·검증 분할: test_size=0.2, 랜덤시드 고정(42)
 

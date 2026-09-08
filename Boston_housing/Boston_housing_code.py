@@ -1,15 +1,11 @@
 # ==============================================================
 # Boston Housing 주택가격 예측 — 전체 분석 코드
-# LAB 05 지도학습 방법론 (itwill LAB03 California 방법론 적용)
 # ==============================================================
 #
-# 원본 데이터 확보 방법 (jussam 라이브러리, 순환참조 버그로 0.5.19 권장):
-#   pip install jussam==0.5.19
-#   from jussam import load_data
-#   origin = load_data("boston")
-#   origin.to_csv("boston_housing_raw.csv", index=False)
+# 원본 데이터: Boston Housing Dataset (Harrison & Rubinfeld, 1978 논문 기반,
+# UCI Machine Learning Repository 및 Kaggle에 공개된 506행 x 14열 데이터)
 #
-# 아래 코드는 위에서 저장한 boston_housing_raw.csv를 입력으로 사용함
+# 아래 코드는 원본 CSV(boston_housing_raw.csv)를 입력으로 사용함
 
 import pandas as pd
 import numpy as np

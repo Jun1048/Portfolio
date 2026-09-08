@@ -8,13 +8,13 @@
  
 | # | 프로젝트명 | 한 줄 설명 | 사용 기술 | 링크 |
 |---|---|---|---|---|
-| 1 | **한국 의료 취약지구 분석** | 229개 시군구 대상 의료 접근성 격차를 시각화·군집화·회귀분석하여 정책 제언 도출 | `Python`, `Pandas`, `Clustering`, `Regression`, `GeoPandas` | [🔗 바로가기](#1-한국-의료-취약지구-분석) |
+| 1 | **Boston Housing 주택가격 예측** | 1970년대 보스턴 506개 지역 데이터로 주택가격 결정요인을 규명하고 예측모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `CatBoost`, `SHAP` | [🔗 바로가기](#2-boston-housing-주택가격-예측) |
 | 2 | *(추가 예정)* | | | |
 | 3 | *(추가 예정)* | | | |
  
 ---
  
-#### #1. Project - Boston Housing 주택가격 예측
+## 1. Boston Housing 주택가격 예측
 
 - Background
 

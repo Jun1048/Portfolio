@@ -108,9 +108,54 @@
 
 보러가기: [diamond_price 포트폴리오](https://github.com/Jun1048/Portfolio_ML/tree/main/Diamonds%20Prices)
 
-
 ---
 
+## 3. Apple Quality(사과 품질 예측)
+
+- Background
+
+주제 : 사과 품질(good/bad) 판정요인 규명 및 분류모델 구축
+
+> 주제 선정 배경 : 앞서 완성한 Boston Housing·Diamonds Prices 포트폴리오와 동일한 6단계 방법론(개요-EDA-전처리-모델링-결과-결론)을 새로운 도메인(농산물 품질 분류)에 적용한 세 번째 완성형 포트폴리오로 구성 <br/>
+> 앞선 두 프로젝트가 연속형 목표변수(가격)를 예측하는 회귀 문제였다면, 이번엔 이진 목표변수(품질 등급)를 분류하는 문제라 평가지표·검정방법을 회귀와 다르게 설계함
+
+- Summary
+
+(1). Data Collection
+- 수집대상 : 사과 4,000개체, 변수 9개(식별자·크기·무게·당도·아삭함·과즙함량·숙성도·산도·품질)
+- 수집 출처 : 원자료 제공처 → Kaggle 재배포본
+- 원 물리 단위(cm, g 등)가 아닌 표준화된 값으로 제공되어, 계수 해석은 "표준화 척도 1단위당"으로 한정됨(원 데이터 자체의 한계)
+
+(2). Data Preprocessing
+- 결측치·중복행 0건 확인, 두 품질 등급(good/bad) 거의 정확히 균형(50.1%/49.9%)
+- 종속변수 라벨링(good=1/bad=0), 학습:검증 8:2 stratify 분할
+- 다중공선성 없음(VIF 전부 1.5 미만) 확인 → 변수 제거·차원축소 불필요
+- 로지스틱 회귀 가정 검정(Box-Tidwell)에서 7개 변수 중 5개가 로짓 비선형성 위배 확인 → 제곱항 처방으로 정확도 74.4%→79.0% 개선
+
+(3). Model & Algorithms
+- 이진 분류 모델링 및 SHAP 기반 해석
+
+> 모델링 과정<br/>
+> 프로세스 : 라벨링·스케일링 → 학습/검증 stratify 분할(8:2) → 로지스틱 회귀 기준선 및 가정검정 → 처방 → 9종 베이스라인 비교 → 최종모형 선정<br/>
+> 주요 투입 변수 : 크기(Size), 무게(Weight), 당도(Sweetness), 아삭함(Crunchiness), 과즙함량(Juiciness), 숙성도(Ripeness), 산도(Acidity) 7개<br/>
+> 모델링 : 1. 선형계열 - LogisticRegression(기준선 및 처방 후)<br/>
+> 2. 거리·확률 기반 - KNN·SVC·GaussianNB<br/>
+> 3. 트리/앙상블 계열 - DecisionTree·RandomForest·XGBoost·LightGBM·CatBoost<br/>
+> 4. 최종 선정 - 정확도 기준 근소격차 그룹핑 후 CatBoost 채택(Accuracy 0.8825, ROC-AUC 0.9565), 설명 가능성이 필요한 경우를 위해 처방된 로지스틱 회귀를 별도 트랙으로 병행 채택
+
+- SHAP 분석
+
+> 크기·당도·과즙함량 3개 변수가 판정 영향력의 약 56% 설명<br/>
+> 무게·산도는 단변량 검정에서는 품질과 무관해 보였으나 다변량 모형에서 강하게 유의해지는 억제변수(suppressor variable) 현상 확인 — SHAP 방향과 로지스틱 오즈비 방향이 7개 변수 전부 일치해 결과를 교차검증함
+
+(4). Review
+- 원본 물리 단위·데이터 수집 시점 및 지역이 공개돼 있지 않아 확인 불가로 남음
+- 아삭함(Crunchiness)은 단변량·다변량·비선형 검정 모두에서 신호가 약해, 이 변수가 실제로 무관한지 현재 변수 조합으로는 못 잡는 비선형 관계가 있는지 이번 분석만으로는 단정할 수 없음
+- Train-CV 격차(8.2%)가 소폭 잔존하나 임계값 이내로, 새 데이터에서도 유사한 성능이 재현될 것으로 판단됨
+
+보러가기: [Apple Quality 포트폴리오](https://github.com/Jun1048/Portfolio_ML/tree/main/Apple%20Quality)
+
+---
 
 ## 🛠 Skills & Tools
  

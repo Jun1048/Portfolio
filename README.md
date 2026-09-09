@@ -14,7 +14,7 @@
  
 ---
  
-## 1. boston_housing 주택가격 예측
+## 1. Boston Housing(보스턴 주택 시장 예측)
 
 - Background
 
@@ -62,7 +62,7 @@
  
 ---
 
-## 2. diamond_price 다이아몬드 가격 예측
+## 2. Diamonds Prices(다이아몬드 가격 예측)
 
 - Background
 

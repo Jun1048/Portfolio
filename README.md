@@ -9,7 +9,7 @@
 | # | 프로젝트명 | 한 줄 설명 | 사용 기술 | 링크 |
 |---|---|---|---|---|
 | 1 | **boston_housing 주택가격 예측** | 1970년대 보스턴 506개 지역 데이터로 주택가격 결정요인을 규명하고 예측모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `CatBoost`, `SHAP` | [🔗 바로가기](#2-boston-housing-주택가격-예측) |
-| 2 | *(추가 예정)* | | | |
+| 2 | **diamond_price 다이아몬드 가격 예측** | 4C(캐럿·컷·컬러·투명도) 등급 데이터로 가격 결정요인을 규명하고 예측모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `CatBoost`, `SHAP` | [🔗 바로가기](#2-diamond_price-다이아몬드-가격-예측) |
 | 3 | *(추가 예정)* | | | |
  
 ---
@@ -61,7 +61,57 @@
 보러가기: [Boston Housing 포트폴리오](https://github.com/Jun1048/Portfolio_ML/tree/main/Boston%20Housing)
  
 ---
- 
+
+## 2. diamond_price 다이아몬드 가격 예측
+
+- Background
+
+주제 : 다이아몬드 4C(캐럿·컷·컬러·투명도) 등급 기반 가격 결정요인 규명 및 예측모델 구축
+> 주제 선정 배경 : 앞서 완성한 Boston Housing 포트폴리오와 동일한 6단계 방법론(개요-EDA-전처리-모델링-결과-결론)을 새로운 도메인(다이아몬드 소매시장)에 적용해 두 번째 완성형 포트폴리오로 구성
+
+- Summary
+
+(1). Data Collection
+
+- 수집대상 : 원형 브릴리언트 컷 다이아몬드 53,940건, 변수 10개(price~z)
+- 수집 출처 : 온라인 다이아몬드 판매 플랫폼 원자료 → 공개 데이터셋 등재 → Kaggle 재배포본
+
+(2). Data Preprocessing
+
+- 결측치 0건, 물리적으로 불가능한 0값(x·y·z) 20건 삭제, 중복행 146건은 삭제 대신 그룹보존 방식으로 처리
+- 왜도 기준 로그변환 2종(price·carat) — 왜도 각각 1.618→0.116, 1.116→0.581로 개선
+- carat·x·y·z 다중공선성(VIF 20~63) 확인 → x·y·z 제거, carat 단독 채택(VIF 1점대로 해소)
+- 캐럿 "매직사이즈"(0.5·0.7·1.0·1.5·2.0) 이산점 실측 확인 → 근접 플래그 파생변수 생성
+
+(3). Model & Algorithms
+
+- 회귀 모델링 및 SHAP 기반 해석
+
+> 모델링 과정
+> 프로세스 : 로그변환·순서형 인코딩·플래그 생성 → 그룹보존 학습/검증 분할(8:2) → 계열별 전처리(스케일링) → 11종 베이스라인 비교 → 하이퍼파라미터 튜닝 → 최종모형 선정
+> 주요 투입 변수 : 캐럿(carat), 컷·컬러·투명도 등급, 깊이비율(depth)·테이블비율(table), 매직사이즈 근접 플래그 등 7개
+> 모델링 : 1. 선형계열 - LinearRegression·Ridge·Lasso·ElasticNet
+> 2. 비선형/거리기반 - KNN·SVR
+> 3. 트리/앙상블 계열 - DecisionTree·RandomForest·XGBoost·LightGBM·CatBoost
+> 4. 최종 선정 - RMSE 기준 근소격차 그룹핑 후 보조지표(MAE·R²)로 결함 점검하여 CatBoost 채택(Test RMSE 0.0948, R² 0.9913)
+
+- SHAP 분석
+
+> 캐럿(carat) 단 하나가 가격 변동의 약 77% 설명
+> 4C 등급(컷·컬러·투명도)은 원시 데이터에서는 등급이 낮을수록 평균가가 오히려 높아 보이는 역설이 있었으나, 캐럿을 통제한 SHAP 순수효과에서는 등급이 높을수록 가격 기여도가 정상적으로 증가함을 확인(교란관계 해소)
+
+(4). Review
+
+- 변수 축소(7→3개) 시도는 성능을 15.92% 악화시켜 사전 규칙에 따라 기각 — 개별 중요도가 낮다고 항상 제거해도 되는 건 아님을 확인
+- 중복행 146건이 단순 데이터 입력 오류인지 서로 다른 실물 다이아몬드인지는 최종적으로 확인 불가
+- 데이터 수집 시점·화폐 기준연도가 명시돼 있지 않아 확인 불가로 남음
+
+보러가기: [diamond_price 포트폴리오](https://github.com/Jun1048/Portfolio_ML/tree/main/Diamonds%20Prices)
+
+
+---
+
+
 ## 🛠 Skills & Tools
  
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)

@@ -271,7 +271,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 □ **데이터의 퍼짐과 안정성**
 
-> 왜도·첨도·IQR 기반 이상치 판정은 연속형 분포를 전제로 한 개념이라, 이진변수(0/1)인 CHAS에는 적용하지 않음 — 계산을 빠뜨린 게 아니라 개념적으로 해당되지 않아 제외함
+> 왜도·첨도·IQR 기반 이상치 판정은 연속형 분포를 전제로 한 개념이라, 이진변수(0/1)인 CHAS에는 적용하지 않음
 
 | 변수 | 왜도 | 해석 |
 |---|---|---|

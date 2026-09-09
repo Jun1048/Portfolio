@@ -58,7 +58,7 @@
 - 종속변수가 $50,000에서 상한 절단되어 있어, 고가 주택 구간(검증셋 절단 관측치 3건)은 모델이 일관되게 과소예측함 → 고가 구간 예측에는 부적합
 - 원 데이터의 수집 목적(대기오염 정책평가)과 현재 분석 목적(가격예측)이 달라, 실무 적용 시 이 괴리를 반드시 고지해야 함
 
-보러가기: [boston_housing 포트폴리오](https://github.com/Jun1048/Portfolio_ML/tree/main/Boston Housing)
+보러가기: [Boston Housing 포트폴리오](https://github.com/Jun1048/Portfolio_ML/tree/main/Boston%20Housing)
  
 ---
  

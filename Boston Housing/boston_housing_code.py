@@ -156,8 +156,3 @@ mean_abs_shap = np.abs(shap_values).mean(axis=0)
 shap_df = pd.DataFrame({"변수": TREE_FEATURES, "mean|SHAP|": mean_abs_shap}).sort_values("mean|SHAP|", ascending=False)
 print("\n=== SHAP 중요도 ===")
 print(shap_df)
-
-# ==============================================================
-# 상세 해석·의문점 규명 과정(절단 근거 문헌 대조, TAX-RAD 다중공선성
-# 처리 시도와 실패 기록, 과적합 진단 등)은 통합 리포트(md) 참고
-# ==============================================================

@@ -10,7 +10,7 @@
 |---|---|---|---|---|
 | 1 | **Boston Housing(보스턴 주택 시장 예측)** | 1970년대 보스턴 506개 지역 데이터로 주택가격 결정요인을 규명하고 예측모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `CatBoost`, `SHAP` | [🔗 바로가기](#2-boston-housing-주택가격-예측) |
 | 2 | **Diamonds Prices(다이아몬드 가격 예측)** | 4C(캐럿·컷·컬러·투명도) 등급 데이터로 가격 결정요인을 규명하고 예측모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `CatBoost`, `SHAP` | [🔗 바로가기](#2-diamond_price-다이아몬드-가격-예측) |
-| 3 | *(추가 예정)* | | | |
+| 3 | **Apple Quality(사과 품질 예측)** | 사과 4,000개체 데이터로 품질(good/bad) 판정요인을 로지스틱 회귀로 규명, 로짓 비선형성·억제변수 진단까지 수행한 분류모델(SHAP 해석 포함) 구축 | `Python`, `Pandas`, `Scikit-learn`, `Statsmodels`, `CatBoost`, `SHAP` | [🔗 바로가기](#3-apple-quality-사과-품질-예측) |
  
 ---
  

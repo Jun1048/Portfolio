@@ -16,11 +16,11 @@
 
 ### 1-1. 분석 배경 및 목적 (1)
 
-□ **주택 시장 분석의 의미**
+■ **주택 시장 분석의 의미**
 
 | 부동산 | 주택 |
 |---|---|
-| 움직여 옮길 수 없는 유형의 자산, 토지와 그 정착물 | 누구에게나 필요한 주거 공간이자 삶의 터전 |
+| 토지나 건물과 같이 움직여 옮길 수 없는 재산 | 생활에 필요한 주거 공간이자 삶의 터전 |
 | ➡ 경제 주체(개인·법인)의 보유 자산 유형 중 주식·채권과 대체성을 가지는 투자자산 | ➡ 개인의 삶의 질 결정, 소유 재화 중 가장 고가의 자산 |
 | ➡ 포트폴리오 구성에서 핵심 위치 | ➡ 경제적·사회적으로도 다양한 가치 지님, 소비재인 동시에 투자재 |
 
@@ -31,7 +31,7 @@
 
 ### 1-2. 분석 배경 및 목적 (2)
 
-□ **데이터가 만들어진 배경 — 청정공기에 대한 지불의사(WTP) 측정**
+■ **데이터가 만들어진 배경 — 청정공기에 대한 지불의사(WTP) 측정**
 
 ◎ 1970년, 미국 연방정부는 자동차 배기가스 규제(1971년식부터 단계적 강화)를 시행하기 시작했고, 이 규제의 편익(clean air의 가치)을 화폐 단위로 측정할 방법이 필요했음
 
@@ -56,7 +56,7 @@
 
 ### 1-3. 분석 배경 및 목적 (3)
 
-□ **선행연구 조사 — 이론적 기반과 데이터 활용의 계보**
+■ **선행연구 조사 — 이론적 기반과 데이터 활용의 계보**
 
 | 연도 | 연구자 | 내용 |
 |---|---|---|
@@ -74,7 +74,7 @@
 
 ### 1-4. 분석 배경 및 목적 (4)
 
-□ **선행연구 조사 — 계수 해석을 위한 이론적 근거**
+■ **선행연구 조사 — 계수 해석을 위한 이론적 근거**
 
 ◎ 헤도닉 가격이론 → 가격 결정요인의 계수 해석에 대한 이론적 근거 제공
 ◎ 다중공선성 진단 연구 → 왜 변수 선택·차원축소가 이 데이터에서 특히 중요한지에 대한 근거 제공
@@ -96,7 +96,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-5. 분석 범위 · 단위 · 질문
 
-□ **분석 범위**
+■ **분석 범위**
 
 ◎ 1970년 단일 시점 자료이므로 인과가 아니라 연관을 본다.
 
@@ -106,7 +106,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 | 공간 | 보스턴 대도시통계지역(SMSA) 내 506개 census tract |
 | 화폐 단위 | 1970년 달러 (물가 조정 안 됨) |
 
-□ **분석 질문 (가설 수립)**
+■ **분석 질문 (가설 수립)**
 
 | 번호 | 질문 |
 |---|---|
@@ -123,7 +123,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-6. 데이터 소개 (1)
 
-□ **1970년 미국 인구조사 및 관련 행정자료**
+■ **1970년 미국 인구조사 및 관련 행정자료**
 
 | 항목 | 내용 |
 |---|---|
@@ -133,7 +133,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 | 관측 수 | 506개 tract, 변수 14개 |
 | 최초 공개 | Harrison & Rubinfeld (1978), 이후 Gilley & Pace(1996)가 데이터 오류 수정 |
 
-□ **데이터 출처 계보**
+■ **데이터 출처 계보**
 
 | 단계 | 주체 | 한 일 |
 |---|---|---|
@@ -150,7 +150,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-7. 데이터 소개 (2)
 
-□ **데이터 구조 점검**
+■ **데이터 구조 점검**
 
 | 크기 | 자료형 | 중복행 | 행·열 이름 |
 |---|---|---|---|
@@ -182,7 +182,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-8. 데이터 소개 (3)
 
-□ **형식·표기·단위 점검 / 한계 인지**
+■ **형식·표기·단위 점검 / 한계 인지**
 
 ◎ 값의 범위와 표기가 물리적으로 가능한 형태인지 확인 — 상한 절단의 단서가 이 단계에서 드러남
 
@@ -212,13 +212,13 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-9. 데이터 품질 점검 (1)
 
-□ **결측치 점검과 처리**
+■ **결측치 점검과 처리**
 
 | 변수 | 결측 건수 | 비율 | 처리 |
 |---|---|---|---|
 | 전체 14개 변수 | 0 | 0.00% | 해당 없음 — 별도 삭제 절차 불필요 |
 
-□ **중복행 점검**
+■ **중복행 점검**
 
 | 항목 | 결과 |
 |---|---|
@@ -230,7 +230,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-10. 기술 통계량 확인 (1)
 
-□ **범주형 변수(CHAS) 기술통계**
+■ **범주형 변수(CHAS) 기술통계**
 
 | | count | unique | top | freq |
 |---|---|---|---|---|
@@ -238,7 +238,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 > 전체 506개 tract 중 471개(93.1%)가 CHAS=0(찰스강 비인접), 35개(6.9%)가 CHAS=1(인접)임. 이 변수와 주택가격 간의 관계는 2단계(탐색적 데이터 분석)에서 검정을 통해 다룸
 
-□ **연속형 변수 506행 기준 기술통계**
+■ **연속형 변수 506행 기준 기술통계**
 
 | 변수 | count | mean | std | min | 25% | 50% | 75% | max |
 |---|---|---|---|---|---|---|---|---|
@@ -256,7 +256,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 | LSTAT | 506 | 12.653 | 7.141 | 1.730 | 6.950 | 11.360 | 16.955 | 37.970 |
 | MEDV | 506 | 22.533 | 9.197 | 5.000 | 17.025 | 21.200 | 25.000 | 50.000 |
 
-□ **데이터 중심 수준**
+■ **데이터 중심 수준**
 
 | 변수 | 평균 | 중앙값 | 차이 |
 |---|---|---|---|
@@ -269,7 +269,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-11. 기술 통계량 확인 (2)
 
-□ **데이터의 퍼짐과 안정성**
+■ **데이터의 퍼짐과 안정성**
 
 > 왜도·첨도·IQR 기반 이상치 판정은 연속형 분포를 전제로 한 개념이라, 이진변수(0/1)인 CHAS에는 적용하지 않음
 
@@ -289,7 +289,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 | RM | +0.404 | 대칭에 가까움 |
 | INDUS | +0.295 | 대칭 |
 
-□ **이상치(절단) 확인**
+■ **이상치(절단) 확인**
 
 | 변수 | 절단값 | 건수 | 비율 |
 |---|---|---|---|
@@ -307,7 +307,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 1-12. 분석 프로세스
 
-□ **분석 과정 중심의 프로세스**
+■ **분석 과정 중심의 프로세스**
 
 | 단계 | 적용 내용 | 비고 |
 |---|---|---|
@@ -330,7 +330,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 2-1. 종속변수 분포 (주택 중위가격: $1,000 단위)
 
-□ **MEDV**
+■ **MEDV**
 
 ◎ 우편향 → 분포의 성질이 아니라 **상한 절단**이라는 기록 방식에 기인함 (1단계에서 Gilley & Pace(1996)로 근거 확인 완료)
 
@@ -379,7 +379,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 ### 2-3. 범주형 독립변수 — 찰스강 인접 여부 (CHAS)
 
-□ **CHAS**
+■ **CHAS**
 
 ◎ CHAS는 **이진(0/1) 변수**이므로 다범주 분산분석이 아니라 2집단 비교 검정을 적용해야 함
 
@@ -388,7 +388,7 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 | 0 (비인접) | 471 | 93.1% |
 | 1 (인접) | 35 | 6.9% |
 
-□ **검정 방법 판단 — 실제 정규성·등분산 검정으로 확인**
+■ **검정 방법 판단 — 실제 정규성·등분산 검정으로 확인**
 
 | 사전 점검 | 결과 | 판정 |
 |---|---|---|

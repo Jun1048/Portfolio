@@ -1,4 +1,4 @@
-# Apple Quality Prediction(사과 품질 예측)
+# Apple Quality(사과 품질 예측)
 
 ## 목차
 

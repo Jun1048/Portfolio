@@ -73,12 +73,20 @@ for c in num_cols:
 good = df[df["Quality"] == "good"]
 bad = df[df["Quality"] == "bad"]
 
+# 두 집단 모두 정규성을 만족하면 Bartlett 등분산 검정 후 Student/Welch t-test,
+# 하나라도 정규성을 만족하지 않으면 Mann-Whitney U 검정으로 분기
 for c in num_cols:
-    lev_stat, lev_p = stats.levene(good[c], bad[c])
-    equal_var = lev_p >= 0.05
-    t_stat, t_p = stats.ttest_ind(good[c], bad[c], equal_var=equal_var)
-    pb_corr, pb_p = stats.pointbiserialr(df["Quality_label"], df[c])
-    print(f"{c}: t={t_stat:.3f}, p={t_p:.4g}, point-biserial r={pb_corr:.3f}")
+    _, p_good = stats.normaltest(good[c])
+    _, p_bad = stats.normaltest(bad[c])
+    if p_good >= 0.05 and p_bad >= 0.05:
+        _, bart_p = stats.bartlett(good[c], bad[c])
+        equal_var = bart_p >= 0.05
+        stat, p = stats.ttest_ind(good[c], bad[c], equal_var=equal_var)
+        method = "Student t-test" if equal_var else "Welch t-test"
+    else:
+        stat, p = stats.mannwhitneyu(good[c], bad[c], alternative="two-sided")
+        method = "Mann-Whitney U"
+    print(f"{c}: {method}, statistic={stat:.3f}, p={p:.4g}")
 
 corr = df[num_cols].corr(method="pearson")
 print(corr.round(3))
@@ -105,7 +113,7 @@ vif_data["VIF"] = [variance_inflation_factor(X_train_const.values, i) for i in r
 print(vif_data)
 
 # ======================================================================
-# 5. 로지스틱 회귀 기준선 모형 및 가정 검정 (Box-Tidwell)
+# 5. 로지스틱 회귀 기준선 모형 및 가정 검정 (Box-Tidwell, 반복 진단-처방)
 # ======================================================================
 
 logit_model = sm.Logit(y_train, X_train_const)
@@ -113,35 +121,65 @@ result = logit_model.fit(disp=0)
 print(result.summary())
 print("오즈비:\n", np.exp(result.params))
 
-# Box-Tidwell 로짓 선형성 검정 (위치이동 후 x*ln(x) 항 추가)
-X_shifted = X_train_s.copy()
-for c in num_cols:
-    shift = 1 - X_shifted[c].min()
-    X_shifted[c] = X_shifted[c] + shift
 
-violating_vars = []
-for target_var in num_cols:
-    X_bt = X_shifted.copy()
-    X_bt[f"{target_var}_xlnx"] = X_bt[target_var] * np.log(X_bt[target_var])
-    X_bt_const = sm.add_constant(X_bt)
-    model_bt = sm.Logit(y_train, X_bt_const)
-    res_bt = model_bt.fit(disp=0)
-    p_val = res_bt.pvalues[f"{target_var}_xlnx"]
-    verdict = "위배" if p_val < 0.05 else "충족"
-    print(f"{target_var}: p={p_val:.4g} -> {verdict}")
-    if p_val < 0.05:
-        violating_vars.append(target_var)
+def boxtidwell_diagnose(data_lin, source_for_ln, target_vars, y):
+    """target_vars 각각에 대해 x*ln(x) 보조항을 넣어 로짓 선형성을 검정."""
+    rows = []
+    for col in target_vars:
+        bt = data_lin.copy()
+        base = source_for_ln[col]
+        if base.min() <= 0:
+            base = base - base.min() + 1
+        bt[f"{col}_aux"] = base * np.log(base)
+        bt_fit = sm.Logit(y, sm.add_constant(bt)).fit(disp=0)
+        rows.append((col, bt_fit.tvalues[f"{col}_aux"], bt_fit.pvalues[f"{col}_aux"]))
+    return rows
 
-print("로짓 선형성 위배 변수:", violating_vars)
+
+# 위배 변수를 가장 심한 것부터 하나씩 처방하고, 매 라운드 나머지 변수를 재진단
+data_lin = X_train_s.copy()
+active_vars = num_cols.copy()
+recipe = []
+
+fit_prev = sm.Logit(y_train, sm.add_constant(data_lin)).fit(disp=0)
+aic_prev = fit_prev.aic
+
+round_num = 0
+while True:
+    round_num += 1
+    diag = boxtidwell_diagnose(data_lin, X_train_s, active_vars, y_train)
+    violating = sorted([d for d in diag if d[2] < 0.05], key=lambda d: -abs(d[1]))
+    if not violating:
+        print(f"[라운드 {round_num}] 위배 0종 -> 종료")
+        break
+
+    worst_col, worst_z, worst_p = violating[0]
+    data_lin[f"{worst_col}_sq"] = data_lin[worst_col] ** 2
+    fit_new = sm.Logit(y_train, sm.add_constant(data_lin)).fit(disp=0)
+    lr_p = 1 - stats.chi2.cdf(2 * (fit_new.llf - fit_prev.llf), 1)
+    print(f"[라운드 {round_num}] 위배 {len(violating)}종 -> '{worst_col}' 처방 "
+          f"(z={worst_z:.3f}, 우도비 p={lr_p:.4g}, AIC {aic_prev:.2f}->{fit_new.aic:.2f})")
+
+    recipe.append(worst_col)
+    active_vars.remove(worst_col)
+    fit_prev, aic_prev = fit_new, fit_new.aic
+    if not active_vars:
+        break
+
+print("\n제곱항 처방 변수:", recipe)
+print("처방 제외(선형성 충족):", [c for c in num_cols if c not in recipe])
+
+# 독립성 검정 (Durbin-Watson)
+from statsmodels.stats.stattools import durbin_watson
+print("Durbin-Watson:", durbin_watson(fit_prev.resid_pearson))
 
 # ======================================================================
 # 6. 처방 - 계층 원칙에 따른 제곱항 추가 및 성능 비교
 # ======================================================================
 
-X_train_fix = X_train_s.copy()
+X_train_fix = data_lin.copy()  # 반복 처방이 모두 반영된 학습 데이터
 X_test_fix = X_test_s.copy()
-for v in violating_vars:
-    X_train_fix[f"{v}_sq"] = X_train_s[v] ** 2
+for v in recipe:
     X_test_fix[f"{v}_sq"] = X_test_s[v] ** 2
 
 model_base = LogisticRegression(random_state=RANDOM_STATE, max_iter=1000)
@@ -152,8 +190,8 @@ print("기준선 Accuracy:", accuracy_score(y_test, pred_base))
 
 model_fix = LogisticRegression(random_state=RANDOM_STATE, max_iter=1000)
 model_fix.fit(X_train_fix, y_train)
-pred_fix = model_fix.predict(X_test_fix)
-proba_fix = model_fix.predict_proba(X_test_fix)[:, 1]
+pred_fix = model_fix.predict(X_test_fix[X_train_fix.columns])
+proba_fix = model_fix.predict_proba(X_test_fix[X_train_fix.columns])[:, 1]
 print("처방 후 Accuracy:", accuracy_score(y_test, pred_fix))
 print("처방 후 F1:", f1_score(y_test, pred_fix))
 print("처방 후 ROC-AUC:", roc_auc_score(y_test, proba_fix))

@@ -1,4 +1,4 @@
-# Diamonds Prices Prediction(다이아몬드 가격 예측)
+# Diamonds Prices(다이아몬드 가격 예측)
 
 ## 목차
 

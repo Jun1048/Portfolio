@@ -21,12 +21,10 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 origin = pd.read_csv("boston_housing_raw.csv")
 origin.head()
 
-# 원본 데이터 프레임 복사
 df1 = origin.copy()
 df1["CHAS"] = df1["CHAS"].astype("category")
 df1.info()
 
-# 중복 데이터 개수
 dup = df1.duplicated()
 dup.sum()
 
@@ -35,17 +33,14 @@ df2.duplicated().sum()
 
 df2['CHAS'].value_counts()
 
-# 수치형 변수의 이름 추출
 fields = df2.select_dtypes(include="number").columns.to_list()
 print(fields)
 
-minmax = []  # 최소값과 최대값을 저장할 리스트
-
+minmax = []
 for field in fields:
     min_value = df2[field].min()
     max_value = df2[field].max()
     minmax.append({"min": min_value, "max": max_value})
-
 minmax_df = DataFrame(minmax, index=fields)
 minmax_df
 
@@ -62,79 +57,50 @@ df3 = df2.copy()
 df3['CHAS'] = df3['CHAS'].astype('category')
 df3.info()
 
-# T는 데이터프레임의 행과 열을 바꿔주는 역할
 desc_df = df3.describe().T
 desc_df
 
 cate_desc_df = df3.describe(include='category').T
 cate_desc_df
 
-# 명목형 변수의 필드명 추출
 cate_fields = df3.select_dtypes(include='category').columns
-
-# 명목형 변수의 고유값과 빈도수 계산
 for field in cate_fields:
     vcount = df3[field].value_counts()
     percent = vcount / df3.shape[0]
     cate_result = DataFrame({'count': vcount, 'percent': percent})
     print(cate_result)
 
-# "평균-중앙값 상대 차이율 = |평균 - 중앙값| / 중앙값" 컬럼 추가
 desc_df['rel_diff'] = abs(desc_df['mean'] - desc_df['50%']) / desc_df['50%']
-
 conditions = [desc_df['rel_diff'] < 0.1, desc_df['rel_diff'] < 0.5]
 choices = ['similar', 'diff']
 desc_df['rdiff_flag'] = np.select(conditions, choices, default='large_diff')
 
-# iqr
 desc_df['iqr'] = desc_df['75%'] - desc_df['25%']
-
-# 상한/하한 이상치 경계
 desc_df['upper_bound'] = desc_df['75%'] + 1.5 * desc_df['iqr']
 desc_df['lower_bound'] = desc_df['25%'] - 1.5 * desc_df['iqr']
-desc_df[['iqr', 'upper_bound', 'lower_bound']]
 
-# 명목형 변수를 제외한 데이터프레임 (이상치 계산용)
 cate_fields = df3.select_dtypes(include='category').columns
 df4 = df3.drop(columns=cate_fields)
-df4.head()
 
-# 상한 이상치 수
 desc_df['upper_outliers'] = (df4 > desc_df['upper_bound']).sum()
 desc_df['upper_outliers_ratio'] = desc_df['upper_outliers'] / df4.shape[0]
-
-# 하한 이상치 수
 desc_df['lower_outliers'] = (df4 < desc_df['lower_bound']).sum()
 desc_df['lower_outliers_ratio'] = desc_df['lower_outliers'] / df4.shape[0]
-
-# 통합 이상치 수
 desc_df['outliers'] = desc_df['upper_outliers'] + desc_df['lower_outliers']
 desc_df['outliers_ratio'] = desc_df['outliers'] / df3.shape[0]
-desc_df[['upper_outliers', 'upper_outliers_ratio',
-         'lower_outliers', 'lower_outliers_ratio',
-         'outliers', 'outliers_ratio']]
 
-# 왜도 계산
 desc_df['skew'] = df4.skew()
-conditions_skew = [(desc_df['skew'] < -0.5), (desc_df['skew'] > 0.5)]
-choices_skew = ['left tail', 'right tail']
-desc_df['skew_interpret'] = np.select(conditions_skew, choices_skew, default='symmetric')
-
-# 첨도 계산
 desc_df['kurt'] = df4.kurt()
-conditions_kurt = [(desc_df['kurt'] < 0), (desc_df['kurt'] > 0)]
-choices_kurt = ['platykurtic', 'leptokurtic']
-desc_df['kurt_interpret'] = np.select(conditions_kurt, choices_kurt, default='mesokurtic')
 
 
 def judge_log_transform(skew, kurt):
-    if skew >= 1:                       # 강한 우측 꼬리 분포
+    if skew >= 1:
         return "log1p"
-    elif skew > 0.5 and kurt > 0:       # 우측 꼬리 분포이면서 첨도가 높은 경우
+    elif skew > 0.5 and kurt > 0:
         return "log1p"
-    elif skew <= -1:                    # 강한 좌측 꼬리 분포
+    elif skew <= -1:
         return "reverse_log1p"
-    elif skew < -0.5 and kurt > 0:      # 좌측 꼬리 분포이면서 첨도가 높은 경우
+    elif skew < -0.5 and kurt > 0:
         return "reverse_log1p"
     else:
         return "none"
@@ -142,8 +108,6 @@ def judge_log_transform(skew, kurt):
 
 desc_df['log_need'] = desc_df.apply(lambda row: judge_log_transform(row['skew'], row['kurt']), axis=1)
 desc_df[['skew', 'kurt', 'log_need']]
-
-desc_df.T
 
 
 # ==============================================================
@@ -154,30 +118,29 @@ desc_df.T
 medv_capped_count = (df3['MEDV'] == 50.0).sum()
 print("MEDV=50 절단 건수:", medv_capped_count)
 
-# 독립변수 AGE 절단 의심 확인
+# AGE 분포 확인 — 100 부근 집중되어 있으나, 별도 절단 처리 없이 그대로 사용함
 age_capped_count = (df3['AGE'] == 100.0).sum()
-age_99_count = ((df3['AGE'] >= 99.0) & (df3['AGE'] < 100.0)).sum()
-print("AGE=100 건수:", age_capped_count, "/ AGE 99대 건수:", age_99_count)
+print("AGE=100 건수:", age_capped_count, "(별도 플래그 없이 그대로 사용)")
 
-# RAD 이산점 확인
+# RAD, TAX 이산 구조 확인
 rad_max_count = (df3['RAD'] == 24).sum()
-print("RAD=24 건수:", rad_max_count)
+tax_666_count = (df3['TAX'] == 666).sum()
+print("RAD=24 건수:", rad_max_count, "/ TAX=666 건수:", tax_666_count)
+print("두 집합이 동일 town 그룹인지 확인:",
+      set(df3[df3['RAD'] == 24].index) == set(df3[df3['TAX'] == 666].index))
 
-# CHAS 집단별 MEDV 정규성 검정 (D'Agostino-Pearson normaltest)
+# CHAS 집단별 MEDV 정규성 검정 (normaltest)
 group0 = df3[df3['CHAS'] == 0]['MEDV']
 group1 = df3[df3['CHAS'] == 1]['MEDV']
-
 stat0, pvalue0 = stats.normaltest(group0)
 stat1, pvalue1 = stats.normaltest(group1)
-print(f"CHAS=0 정규성 검정: stat={stat0:.4f}, p={pvalue0:.6f}")
-print(f"CHAS=1 정규성 검정: stat={stat1:.4f}, p={pvalue1:.6f}")
+print(f"CHAS=0 정규성: stat={stat0:.4f}, p={pvalue0:.6f}")
+print(f"CHAS=1 정규성: stat={stat1:.4f}, p={pvalue1:.6f}")
 
-# 등분산성 검정 (Levene)
 levene_stat, levene_p = stats.levene(group0, group1)
-print(f"Levene 등분산 검정: stat={levene_stat:.4f}, p={levene_p:.6f}")
+print(f"Levene 등분산: stat={levene_stat:.4f}, p={levene_p:.6f}")
 
-# CHAS=0 집단이 정규성을 위배하므로(두 집단 모두 정규성을 만족해야 t검정 적용 가능)
-# Mann-Whitney U 검정(비모수) 적용
+# 정규성 위배 -> Mann-Whitney U 검정
 u_stat, u_pvalue = stats.mannwhitneyu(group0, group1, alternative='two-sided')
 n0, n1 = len(group0), len(group1)
 effect_r = 1 - (2 * u_stat) / (n0 * n1)
@@ -185,30 +148,29 @@ print(f"Mann-Whitney U: stat={u_stat}, p={u_pvalue:.6f}, effect_r={effect_r:.3f}
 
 # 연속형 변수와 MEDV의 상관관계 (Spearman)
 num_fields = ['CRIM', 'ZN', 'INDUS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT']
-
 corr_result = []
 for field in num_fields:
     rho, pvalue = stats.spearmanr(df3[field], df3['MEDV'])
     corr_result.append({'field': field, 'rho': rho, 'p': pvalue})
-
 corr_df = DataFrame(corr_result).sort_values('rho', key=abs, ascending=False)
 corr_df
 
-# 다중공선성 확인 (VIF)
+# 다중공선성 확인 (VIF, 임계값 10.0)
 vif_fields = ['CRIM', 'ZN', 'INDUS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT']
 X_vif = df3[vif_fields].assign(const=1)
-
 vif_result = []
 for i, field in enumerate(vif_fields):
     vif_value = variance_inflation_factor(X_vif.values, i)
     vif_result.append({'field': field, 'vif': vif_value})
-
 vif_df = DataFrame(vif_result).sort_values('vif', ascending=False)
 vif_df
 
-# TAX-RAD 상관 확인 (다중공선성 원인 규명)
-tax_rad_corr = df3[['TAX', 'RAD']].corr().iloc[0, 1]
-print("TAX-RAD 피어슨 상관계수:", tax_rad_corr)
+# 최종 변수 선택 규칙: 강한 쌍(|rho|>=0.7)으로 묶인 변수 중
+# 종속변수와의 효과크기가 가장 큰 1개만 대표로 남김
+# -> 세율축(TAX, RAD): TAX(rho=-0.562)가 RAD(rho=-0.347)보다 강하므로 RAD 제외
+# -> 도심축(CRIM,DIS,NOX,AGE,INDUS): INDUS(rho=-0.578)가 최대이므로 대표 채택,
+#    나머지는 모델링 이후 계수/중요도로 재검증할 "후보"로 남김
+print("RAD는 세율축에서 TAX와 중복되고 효과크기가 더 약해 최종 변수에서 제외함")
 
 
 # ==============================================================
@@ -216,7 +178,7 @@ print("TAX-RAD 피어슨 상관계수:", tax_rad_corr)
 # ==============================================================
 
 df5 = df3.copy()
-df5['CHAS'] = df5['CHAS'].astype(int)  # 모델링을 위해 category -> 정수형으로 되돌림
+df5['CHAS'] = df5['CHAS'].astype(int)
 
 # 로그 변환 (1단계 log_need 판정 결과 반영)
 df5['CRIM_log'] = np.log(df5['CRIM'])
@@ -226,12 +188,10 @@ df5['LSTAT_log'] = np.log(df5['LSTAT'])
 df5['B_revlog'] = np.log(df5['B'].max() + 1 - df5['B'])
 df5['MEDV_log'] = np.log(df5['MEDV'])
 
-# 절단 플래그 생성 (독립변수만 대상 — 종속변수는 누수 방지를 위해 생성하지 않음)
-df5['is_age_capped'] = (df5['AGE'] == 100).astype(int)
-df5['is_rad_max'] = (df5['RAD'] == 24).astype(int)
+# 참고: AGE는 절단 플래그 없이 그대로 사용하고, RAD는 최종 변수 선택 단계에서
+# TAX와 중복되어 제외되었으므로 아래 모델링에 투입하지 않음
 
-df5[['CRIM_log', 'ZN_log', 'DIS_log', 'LSTAT_log', 'B_revlog',
-     'MEDV_log', 'is_age_capped', 'is_rad_max']].head()
+df5[['CRIM_log', 'ZN_log', 'DIS_log', 'LSTAT_log', 'B_revlog', 'MEDV_log']].head()
 
 
 # ==============================================================
@@ -250,40 +210,33 @@ from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 
-# 선형/거리기반 계열 투입 변수 (RAD 대신 is_rad_max 사용 — 다중공선성 완화)
-linear_fields = ['CRIM_log', 'ZN_log', 'DIS_log', 'LSTAT_log', 'B_revlog',
-                  'NOX', 'RM', 'AGE', 'TAX', 'PTRATIO', 'CHAS',
-                  'is_age_capped', 'is_rad_max']
-
-# 트리 계열 투입 변수 (RAD 원본 사용)
-tree_fields = ['CRIM_log', 'ZN_log', 'DIS_log', 'LSTAT_log', 'B_revlog',
-               'NOX', 'RM', 'AGE', 'RAD', 'TAX', 'PTRATIO', 'CHAS', 'is_age_capped']
+# 최종 투입 변수 11개 (RAD 제외, 절단 플래그 없음)
+fields = ['CRIM_log', 'ZN_log', 'DIS_log', 'LSTAT_log', 'B_revlog',
+          'NOX', 'RM', 'AGE', 'TAX', 'PTRATIO', 'CHAS']
 
 y = df5['MEDV_log']
 idx_train, idx_test = train_test_split(df5.index, test_size=0.2, random_state=42)
 
-X_train_linear = df5.loc[idx_train, linear_fields]
-X_test_linear = df5.loc[idx_test, linear_fields]
-X_train_tree = df5.loc[idx_train, tree_fields]
-X_test_tree = df5.loc[idx_test, tree_fields]
+X_train = df5.loc[idx_train, fields]
+X_test = df5.loc[idx_test, fields]
 y_train = y.loc[idx_train]
 y_test = y.loc[idx_test]
 
-# 스케일링 (선형/거리기반 계열만 적용)
+# 스케일링 (선형/거리기반 계열용)
 scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train_linear)
-X_test_scaled = scaler.transform(X_test_linear)
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
 # --- 1. LinearRegression (베이스라인) ---
 model_lr = LinearRegression()
-model_lr.fit(X_train_linear, y_train)
-pred_lr = model_lr.predict(X_test_linear)
+model_lr.fit(X_train, y_train)
+pred_lr = model_lr.predict(X_test)
 rmse_lr = np.sqrt(mean_squared_error(y_test, pred_lr))
 mae_lr = mean_absolute_error(y_test, pred_lr)
 r2_lr = r2_score(y_test, pred_lr)
 print("LinearRegression - RMSE:", rmse_lr, "MAE:", mae_lr, "R2:", r2_lr)
 
-# --- 2. Ridge (L2 규제) ---
+# --- 2. Ridge ---
 model_ridge = Ridge(random_state=42)
 model_ridge.fit(X_train_scaled, y_train)
 pred_ridge = model_ridge.predict(X_test_scaled)
@@ -292,7 +245,7 @@ mae_ridge = mean_absolute_error(y_test, pred_ridge)
 r2_ridge = r2_score(y_test, pred_ridge)
 print("Ridge - RMSE:", rmse_ridge, "MAE:", mae_ridge, "R2:", r2_ridge)
 
-# --- 3. Lasso (L1 규제, alpha 튜닝값 적용) ---
+# --- 3. Lasso (alpha 튜닝값 적용) ---
 model_lasso = Lasso(alpha=0.001, random_state=42)
 model_lasso.fit(X_train_scaled, y_train)
 pred_lasso = model_lasso.predict(X_test_scaled)
@@ -301,7 +254,7 @@ mae_lasso = mean_absolute_error(y_test, pred_lasso)
 r2_lasso = r2_score(y_test, pred_lasso)
 print("Lasso - RMSE:", rmse_lasso, "MAE:", mae_lasso, "R2:", r2_lasso)
 
-# --- 4. ElasticNet (L1+L2 규제) ---
+# --- 4. ElasticNet ---
 model_en = ElasticNet(alpha=0.001, l1_ratio=0.1, random_state=42)
 model_en.fit(X_train_scaled, y_train)
 pred_en = model_en.predict(X_test_scaled)
@@ -319,7 +272,7 @@ mae_knn = mean_absolute_error(y_test, pred_knn)
 r2_knn = r2_score(y_test, pred_knn)
 print("KNN - RMSE:", rmse_knn, "MAE:", mae_knn, "R2:", r2_knn)
 
-# --- 6. SVR (최종 선정 모형) ---
+# --- 6. SVR ---
 model_svr = SVR(C=10, epsilon=0.1)
 model_svr.fit(X_train_scaled, y_train)
 pred_svr = model_svr.predict(X_test_scaled)
@@ -330,8 +283,8 @@ print("SVR - RMSE:", rmse_svr, "MAE:", mae_svr, "R2:", r2_svr)
 
 # --- 7. DecisionTree ---
 model_dt = DecisionTreeRegressor(max_depth=4, random_state=42)
-model_dt.fit(X_train_tree, y_train)
-pred_dt = model_dt.predict(X_test_tree)
+model_dt.fit(X_train, y_train)
+pred_dt = model_dt.predict(X_test)
 rmse_dt = np.sqrt(mean_squared_error(y_test, pred_dt))
 mae_dt = mean_absolute_error(y_test, pred_dt)
 r2_dt = r2_score(y_test, pred_dt)
@@ -339,8 +292,8 @@ print("DecisionTree - RMSE:", rmse_dt, "MAE:", mae_dt, "R2:", r2_dt)
 
 # --- 8. RandomForest ---
 model_rf = RandomForestRegressor(n_estimators=400, random_state=42)
-model_rf.fit(X_train_tree, y_train)
-pred_rf = model_rf.predict(X_test_tree)
+model_rf.fit(X_train, y_train)
+pred_rf = model_rf.predict(X_test)
 rmse_rf = np.sqrt(mean_squared_error(y_test, pred_rf))
 mae_rf = mean_absolute_error(y_test, pred_rf)
 r2_rf = r2_score(y_test, pred_rf)
@@ -348,8 +301,8 @@ print("RandomForest - RMSE:", rmse_rf, "MAE:", mae_rf, "R2:", r2_rf)
 
 # --- 9. XGBoost ---
 model_xgb = XGBRegressor(n_estimators=400, max_depth=3, learning_rate=0.1, random_state=42)
-model_xgb.fit(X_train_tree, y_train)
-pred_xgb = model_xgb.predict(X_test_tree)
+model_xgb.fit(X_train, y_train)
+pred_xgb = model_xgb.predict(X_test)
 rmse_xgb = np.sqrt(mean_squared_error(y_test, pred_xgb))
 mae_xgb = mean_absolute_error(y_test, pred_xgb)
 r2_xgb = r2_score(y_test, pred_xgb)
@@ -357,17 +310,17 @@ print("XGBoost - RMSE:", rmse_xgb, "MAE:", mae_xgb, "R2:", r2_xgb)
 
 # --- 10. LightGBM ---
 model_lgb = LGBMRegressor(n_estimators=200, max_depth=3, learning_rate=0.1, random_state=42, verbose=-1)
-model_lgb.fit(X_train_tree, y_train)
-pred_lgb = model_lgb.predict(X_test_tree)
+model_lgb.fit(X_train, y_train)
+pred_lgb = model_lgb.predict(X_test)
 rmse_lgb = np.sqrt(mean_squared_error(y_test, pred_lgb))
 mae_lgb = mean_absolute_error(y_test, pred_lgb)
 r2_lgb = r2_score(y_test, pred_lgb)
 print("LightGBM - RMSE:", rmse_lgb, "MAE:", mae_lgb, "R2:", r2_lgb)
 
-# --- 11. CatBoost (해석용 모형 — SHAP 분석에 사용) ---
+# --- 11. CatBoost (최종 선정 모형 — 예측·해석 모두에 사용) ---
 model_cat = CatBoostRegressor(random_state=42, verbose=0)
-model_cat.fit(X_train_tree, y_train)
-pred_cat = model_cat.predict(X_test_tree)
+model_cat.fit(X_train, y_train)
+pred_cat = model_cat.predict(X_test)
 rmse_cat = np.sqrt(mean_squared_error(y_test, pred_cat))
 mae_cat = mean_absolute_error(y_test, pred_cat)
 r2_cat = r2_score(y_test, pred_cat)
@@ -387,9 +340,23 @@ result_summary = DataFrame({
 
 result_summary
 
+# 신뢰성 검증 (Train vs CV vs Test)
+from sklearn.model_selection import KFold, cross_val_score
+
+pred_train_cat = model_cat.predict(X_train)
+train_rmse = np.sqrt(mean_squared_error(y_train, pred_train_cat))
+
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+cv_rmse = -cross_val_score(CatBoostRegressor(random_state=42, verbose=0),
+                            X_train, y_train, cv=kf, scoring='neg_root_mean_squared_error')
+
+gap_pct = (cv_rmse.mean() - train_rmse) / max(abs(train_rmse), abs(cv_rmse.mean())) * 100
+print(f"Train RMSE={train_rmse:.4f}, CV RMSE={cv_rmse.mean():.4f}, Test RMSE={rmse_cat:.4f}")
+print(f"Gap%={gap_pct:.1f}%, CV-Test 차이={abs(cv_rmse.mean()-rmse_cat):.4f}")
+
 
 # ==============================================================
-# 5. 분석결과 — 변수중요도 및 SHAP (해석용 모형: CatBoost)
+# 5. 분석결과 — 변수중요도 및 SHAP (최종모형: CatBoost)
 # ==============================================================
 
 import shap
@@ -397,19 +364,19 @@ import shap
 # 참고: CatBoost는 random_state를 고정해도 스레드 환경에 따라 변수중요도의
 # 세부 수치가 미세하게 달라질 수 있음(알려진 특성). 순위 자체는 재현됨.
 feature_importance = model_cat.get_feature_importance()
-fi_df = DataFrame({'field': tree_fields, 'importance': feature_importance})
+fi_df = DataFrame({'field': fields, 'importance': feature_importance})
 fi_df = fi_df.sort_values('importance', ascending=False)
 fi_df
 
 explainer = shap.TreeExplainer(model_cat)
-shap_values = explainer.shap_values(X_test_tree)
+shap_values = explainer.shap_values(X_test)
 
 mean_abs_shap = np.abs(shap_values).mean(axis=0)
-shap_df = DataFrame({'field': tree_fields, 'mean_abs_shap': mean_abs_shap})
+shap_df = DataFrame({'field': fields, 'mean_abs_shap': mean_abs_shap})
 shap_df = shap_df.sort_values('mean_abs_shap', ascending=False)
 shap_df
 
 # ==============================================================
-# 상세 해석·의문점 규명 과정(절단 근거 문헌 대조, TAX-RAD 다중공선성
-# 처리 시도와 실패 기록, 과적합 진단 등)은 통합 리포트(md) 참고
+# 상세 해석·의문점 규명 과정(EDA 자료와의 대조, 변수 선택 규칙 적용 근거,
+# 과적합 진단 등)은 통합 리포트(md) 참고
 # ==============================================================

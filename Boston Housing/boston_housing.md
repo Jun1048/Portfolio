@@ -392,11 +392,11 @@ Hedonic housing prices and the demand for clean air, *Journal of Environmental E
 
 | 사전 점검 | 결과 | 판정 |
 |---|---|---|
-| CHAS=0 그룹 MEDV 정규성 (Shapiro-Wilk) | stat=0.928, p<0.001 | 정규성 위배 |
-| CHAS=1 그룹 MEDV 정규성 (Shapiro-Wilk) | stat=0.836, p<0.001 | 정규성 위배 |
+| CHAS=0 그룹 MEDV 정규성 (normaltest) | stat=81.133, p<0.001 | 정규성 위배 |
+| CHAS=1 그룹 MEDV 정규성 (normaltest) | stat=5.439, p=0.066 | 정규성 위배 안 됨 (단, 표본 35건으로 검정력 낮음) |
 | 등분산성 (Levene) | stat=4.590, p=0.033 | 등분산 위배 |
 
-→ 두 그룹 모두 정규성을 만족하지 못하고 등분산도 아니므로, **독립표본 t검정 대신 Mann-Whitney U 검정(비모수)을 적용**함
+→ CHAS=0 그룹(471건)이 정규성을 위배해 t검정의 전제조건 자체가 성립하지 않으므로, **독립표본 t검정 대신 Mann-Whitney U 검정(비모수)을 적용**함. CHAS=1 그룹(35건)은 normaltest 기준 정규성이 기각되지 않았으나, 이는 왜도 0.943으로 실제로는 대칭이 아닌데도 표본이 작아 검정력이 부족해 못 잡아낸 것으로 판단됨(Shapiro-Wilk 기준으로는 이 그룹도 p=0.0001로 위배됨) — 두 그룹 중 하나라도 정규성을 만족 못 하면 t검정을 쓸 수 없어 결론은 동일함
 
 □ **Mann-Whitney U 검정 결과**
 

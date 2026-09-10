@@ -163,12 +163,12 @@ print("AGE=100 건수:", age_capped_count, "/ AGE 99대 건수:", age_99_count)
 rad_max_count = (df3['RAD'] == 24).sum()
 print("RAD=24 건수:", rad_max_count)
 
-# CHAS 집단별 MEDV 정규성 검정 (Shapiro-Wilk — 소표본에 적합)
+# CHAS 집단별 MEDV 정규성 검정 (D'Agostino-Pearson normaltest)
 group0 = df3[df3['CHAS'] == 0]['MEDV']
 group1 = df3[df3['CHAS'] == 1]['MEDV']
 
-stat0, pvalue0 = stats.shapiro(group0)
-stat1, pvalue1 = stats.shapiro(group1)
+stat0, pvalue0 = stats.normaltest(group0)
+stat1, pvalue1 = stats.normaltest(group1)
 print(f"CHAS=0 정규성 검정: stat={stat0:.4f}, p={pvalue0:.6f}")
 print(f"CHAS=1 정규성 검정: stat={stat1:.4f}, p={pvalue1:.6f}")
 
@@ -176,7 +176,8 @@ print(f"CHAS=1 정규성 검정: stat={stat1:.4f}, p={pvalue1:.6f}")
 levene_stat, levene_p = stats.levene(group0, group1)
 print(f"Levene 등분산 검정: stat={levene_stat:.4f}, p={levene_p:.6f}")
 
-# 정규성 위배 -> Mann-Whitney U 검정 적용
+# CHAS=0 집단이 정규성을 위배하므로(두 집단 모두 정규성을 만족해야 t검정 적용 가능)
+# Mann-Whitney U 검정(비모수) 적용
 u_stat, u_pvalue = stats.mannwhitneyu(group0, group1, alternative='two-sided')
 n0, n1 = len(group0), len(group1)
 effect_r = 1 - (2 * u_stat) / (n0 * n1)

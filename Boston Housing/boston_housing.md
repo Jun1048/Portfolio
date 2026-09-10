@@ -1,4 +1,4 @@
-# Boston Housing Prediction(보스턴 주택 시장 예측)
+# Boston Housing(보스턴 주택 시장 예측)
 
 ## 목차
 1. 프로젝트 개요
